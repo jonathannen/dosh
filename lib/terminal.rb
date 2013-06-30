@@ -20,7 +20,7 @@ module Dosh
     end
 
     def indentation
-      ENV['DOSH_INDENT']
+      ENV[Dosh::ENV_INDENT]
     end
 
     def log_failure(*args)

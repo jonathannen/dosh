@@ -19,9 +19,19 @@ that can't be repeated, check for it and exit early.
 
 ## Conventions
 
-- "ensure_<state>" checks if a state is true, generating a fault if not.
-- "install_<noun>" installs the given noun, to a completely "ready" state.
-- "meet_<noun>_<state>" takes the noun and attemps to achieve the given state.
+- "ensure_< state >" checks if a state is true, generating a fault if not.
+- "install_< noun >" installs the given noun, to a completely "ready" state.
+- "meet_< noun >_< state >" takes the noun and attemps to achieve the given state.
+
+## Alternatives
+
+Part inspiration comes from [Babushka](http://babushka.me/) by 
+[Ben Hoskings](http://benhoskin.gs/) - with some different design goals. I was
+bending babushka beyond what it was designed to do, hence dosh. If dosh 
+doesn't work for you, Babushka might be what you are after.
+
+You might also want to check out [Chef](http://www.opscode.com/chef/) or
+[Puppet](https://puppetlabs.com/).
 
 ## Contributing
 
@@ -32,3 +42,7 @@ that can't be repeated, check for it and exit early.
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 6. ... and thanks!
+
+## License
+
+MIT Licensed. See LICENSE.txt

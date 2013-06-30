@@ -20,38 +20,81 @@ module Dosh
     include Terminal
     @@dosh_dir = File.expand_path(File.join(File.dirname(File.expand_path(__FILE__)), '..'))
 
-    def initialize(use_require = false)
-      @use_require = use_require
+    attr_reader :no_headers
+
+    def initialize(opts = {})
+      @no_headers = opts[:no_headers] || false
     end
 
     def candidate_files(filename)
       fn = [filename]
       fn += EXPLICIT_EXTENSIONS.map { |ext| "#{filename}#{ext}"} unless has_explicit_extension?(filename)
       fn += fn.product(platform_prefixes).map { |file, dir| File.join(dir, file) }
-      fn.product([@@dosh_dir, Dir.pwd]).map { |file, dir| File.join(dir, file) }.uniq
+      fn.product(["", @@dosh_dir, Dir.pwd]).map { |file, dir| File.join(dir, file) }.uniq
     end
 
     def resolve_file(filename)
       candidate_files(filename).detect { |file| File.exists?(file) }
     end
 
-    def script(*args, &block)
-      if args.first == :meet
-        command = args.first
-        task = Meet.new
-        task.instance_eval(&block)
-      else 
-        filename = nil
-        command = args.shift
-        if @use_require || !File.exists?(command)
-          filename = resolve_file(command)
-        end
-        task = @use_require ? Require.new(filename, args) : Standard.new(filename, command, args)
-      end
-
-      raise "#{command} failed" unless run_dependency(command, task, &block)
-
+    # @return [ true, false ] true if the command was successful
+    def run(*args)
+      cmd = args * ' '
+      run_command(cmd)
+    rescue ArgumentError => ae
+      false
     rescue Exception => e
+      puts "@todo " + e.inspect
+      puts e.backtrace
+      false
+    end
+
+    def run_command(cmd)
+      filename = File.exists?(cmd) ? cmd : resolve_file(cmd)
+      if filename
+        raise "File '#{filename}' not executable" unless File.executable?(filename)
+      else
+        filename = cmd
+      end
+      system(filename)
+      success = $?.success?
+    end
+
+    def resolve!(*args)
+      cmd = args * ' '
+      filename = resolve_file(cmd)
+      raise "File for '#{cmd}' not found" if filename.nil?
+      filename
+    end
+
+    def script(*args, &block)
+      cmd = args * ' '
+      current = ENV[Dosh::ENV_INDENT] || ""
+
+      log_started(cmd) unless no_headers
+      ENV[Dosh::ENV_INDENT] = "#{current}  "
+      throw "fail" unless run(*args)
+
+      run_block(&block) if block_given?
+
+      ENV[Dosh::ENV_INDENT] = current
+      log_success(cmd) unless no_headers
+      true
+    rescue Exception => e
+      ENV[Dosh::ENV_INDENT] = current
+      log_failure(cmd) unless no_headers
+      throw e
+    end
+
+    def run_block(&block)
+      s = Script.new
+      result = s.instance_eval(&block)
+    rescue ArgumentError => ae
+      false
+      raise ae
+    rescue Exception => e
+      puts "@todo " + e.inspect
+      puts e.backtrace
       raise e
     end
 
@@ -59,68 +102,6 @@ module Dosh
 
     def has_explicit_extension?(filename)
       !!EXPLICIT_EXTENSIONS.detect { |ext| filename.end_with?(ext) }
-    end
-
-    def run_dependency(header, task, &block)
-      current = ENV['DOSH_INDENT'] || ""
-      log_started(header)
-      ENV['DOSH_INDENT'] = "#{current}  "
-      result = task.run(&block)
-      ENV['DOSH_INDENT'] = current
-
-      result ? log_success(header) : log_failure(header)
-      result
-    rescue Exception => e
-      puts e.message
-      puts e.backtrace
-      ENV['DOSH_INDENT'] = current
-      log_failure(header)
-      raise e
-    end
-
-  end
-
-
-  class Meet < Script
-
-    def run
-      return true if self.met?
-      meet
-      self.met?
-    end
-
-  end
-
-  class Require < Script
-
-    def initialize(filename, args)
-      @filename = filename
-      @args = args
-    end
-
-    def run
-      raise "File '#{command}' not found" if @filename.nil?
-      ARGV.clear
-      @args.each { |a| ARGV << a }
-      require(@filename)
-    end
-
-  end
-
-  class Standard < Script
-
-    def initialize(filename, command, args)
-      @filename = filename
-      @command = command
-      @args = args
-    end
-
-    def run(&block)
-      raise "File '#{@filename}' not executable" if !@filename.nil? && !File.executable?(@filename)
-      system(@filename || @command, *@args)
-      success = $?.success?
-      self.instance_eval(&block) if success && block_given?
-      success
     end
 
   end

@@ -5,6 +5,8 @@ module Dosh
 
     protected
 
+    # Simple shelling. 
+    # @return [ String ] the output to STDOUT of the script.
     def shell(*args)
       cmd = args * ' '
       `#{cmd}`

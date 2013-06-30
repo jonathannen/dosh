@@ -3,8 +3,10 @@
 # describe: Runs a sample script
 
 script "echo A" do
-  script "echo B"
+  script "echo B" 
   script "echo", "C" do
-    script "generic/fail"
+    raise "Just an error"
+    # script "generic/fail"
   end
+  script "echo D"
 end

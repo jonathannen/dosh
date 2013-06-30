@@ -5,8 +5,27 @@ dir = File.dirname(File.expand_path(__FILE__))
 require File.join(dir, '..', 'lib', 'dosh.rb')
 
 begin
-  Dosh::Script.new(true).script(*ARGV)
+  # Boolean command line operations
+  opts = {
+    no_headers:  %w{--no-headers},
+    use_require: %w{--use-require -r}
+  }.inject({}) do |memo,(opt, flags)|
+    # Bit of double handling because I don't want to mutate ARGV in the same loop
+    memo[opt] = flags.map { |v| ARGV.delete(v) }.reject { |v| v.nil? }.length > 0
+    memo
+  end
+
+  s = Dosh::Script.new(opts)
+  if opts[:use_require]
+    filename = s.resolve!(ARGV)
+    require(filename)
+  else
+    result = s.script(*ARGV)    
+    exit(result ? 0 : 1)
+  end
+
+rescue SystemExit => se
+  raise se
 rescue Exception => e
-  puts e.message
   exit(1)
 end
