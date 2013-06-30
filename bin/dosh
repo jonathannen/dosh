@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby 
+# encoding: utf-8
+
+dir = File.dirname(File.expand_path(__FILE__))
+require File.join(dir, '..', 'lib', 'dosh.rb')
+
+begin
+  Dosh::Script.new(true).script(*ARGV)
+rescue Exception => e
+  puts e.message
+  exit(1)
+end
