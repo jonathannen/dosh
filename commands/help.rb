@@ -6,7 +6,6 @@
 
 puts <<-HELP
 dosh version #{Dosh::VERSION}
-Copyright (C) 2013 Jon Williams
 
 Usage: dosh command_or_file [options]
 
