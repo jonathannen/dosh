@@ -5,10 +5,10 @@ require 'rspec/core/rake_task'
 
 desc 'Assigns execute permissions to suitable files'
 task :chmod do
-  Dir["./**/*.rb"].each do |f|
+  Dir["./**/*.{rb,sh}"].sort.each do |f|
     next if !(f =~ /\A\.\/spec\/sample/) && f =~ /\A\.\/spec/
     v = File.read(f).lines.first.to_s.strip
-    next unless ['#!/usr/bin/env dosh', '#!/usr/bin/env ruby'].include?(v)
+    next unless ['#!/bin/sh', '#!/usr/bin/env dosh', '#!/usr/bin/env ruby'].include?(v)
     puts "+x #{f}"
     FileUtils.chmod("+x", f)
   end

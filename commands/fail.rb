@@ -4,5 +4,5 @@
 #
 # describe: Causes the script to fail with an optional message
 
-puts "#{ENV['DOSH_INDENT']}#{ARGV.first}" if ARGV.length > 0
+$stderr.puts "#{ENV['DOSH_INDENT']}#{ARGV.first}" if ARGV.length > 0
 exit(false)
