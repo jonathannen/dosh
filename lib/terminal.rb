@@ -1,42 +1,54 @@
 # encoding: utf-8
+# Copyright © 2013 Jon Williams. See LICENSE.txt for details.
 module Dosh
 
   module Terminal
 
     protected
 
-    COLORS = %w{black red green yellow blue magenta cyan grey}
-    
-    COLORS.each_with_index do |value, i|
+    %w{black red green yellow blue magenta cyan grey}
+    .each_with_index do |value, i|
       define_method(value.to_sym) { |v| "\e[0;3#{i}m#{v}\e[0m" }
-
-      if value == 'grey'
-        define_method(:gray) { |v| "\e[0;3#{i}m#{v}\e[0m" } 
-      end
+      define_method(:gray) { |v| "\e[0;3#{i}m#{v}\e[0m" } if value == 'grey'
     end
 
     def white(v)
       "\e[0m#{v}"
     end
 
+    def indentation_level
+      (ENV[Dosh::ENV_STACK_DEPTH] || 0).to_i
+    end
+
     def indentation
-      ENV[Dosh::ENV_INDENT]
+      '  ' * indentation_level
+    end
+
+    def log(*args)
+      $stderr.puts "#{indentation}#{magenta(args * ' ')}"      
     end
 
     def log_failure(*args)
-      puts "#{indentation}#{red('✘')} #{args * ' '}"
+      $stderr.puts "#{indentation}#{red('✘')} #{args * ' '}"
     end
 
     def log_general(*args)
-      puts "#{indentation}#{args * ' '}"
+      $stderr.puts "#{indentation}#{args * ' '}"
     end
 
     def log_started(*args)
-      puts "#{indentation}> #{grey(args * ' ')}"
+      i = indentation_level + 1
+      if i > 0
+        indent = grey('  ' * (i - 1)) + '#'
+      else
+        indent = '#' * i
+      end
+
+      $stderr.puts "#{indent} #{grey(args * ' ')}"
     end
 
     def log_success(*args)
-      puts "#{indentation}#{green('✔')} #{args * ' '}"
+      $stderr.puts "#{indentation}#{green('✔')} #{args * ' '}"
     end
 
   end

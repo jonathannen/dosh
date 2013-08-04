@@ -1,4 +1,5 @@
-# coding: utf-8
+# encoding: utf-8
+# Copyright © 2013 Jon Williams. See LICENSE.txt for details.
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'dosh'
@@ -18,6 +19,12 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.3"
-  spec.add_development_dependency "rake"
+
+  { 
+    'bundler'   => '~> 1.3',
+    'rake'      => '>= 10.1.0',
+    'rspec'     => '~> 2.14.1',
+    'unicorn'   => '>= 4.6.3'
+  }.each { |k,v| spec.add_development_dependency(k,v) }
+
 end

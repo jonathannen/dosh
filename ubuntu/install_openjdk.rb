@@ -1,5 +1,7 @@
-#!/usr/bin/env dosh -r
+#!/usr/bin/env dosh
 # encoding: utf-8
+# Copyright © 2013 Jon Williams. See LICENSE.txt for details.
+#
 # install_openjdk [version]
 #   version: "7" would install Java7. This is the default.
 

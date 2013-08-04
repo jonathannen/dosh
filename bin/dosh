@@ -1,31 +1,12 @@
-#!/usr/bin/env ruby 
+#!/usr/bin/env ruby
 # encoding: utf-8
+# Copyright © 2013 Jon Williams. See LICENSE.txt for details.
 
-dir = File.dirname(File.expand_path(__FILE__))
-require File.join(dir, '..', 'lib', 'dosh.rb')
-
-begin
-  # Boolean command line operations
-  opts = {
-    no_headers:  %w{--no-headers},
-    use_require: %w{--use-require -r}
-  }.inject({}) do |memo,(opt, flags)|
-    # Bit of double handling because I don't want to mutate ARGV in the same loop
-    memo[opt] = flags.map { |v| ARGV.delete(v) }.reject { |v| v.nil? }.length > 0
-    memo
-  end
-
-  s = Dosh::Script.new(opts)
-  if opts[:use_require]
-    filename = s.resolve!(ARGV)
-    require(filename)
-  else
-    result = s.script(*ARGV)    
-    exit(result ? 0 : 1)
-  end
-
-rescue SystemExit => se
-  raise se
-rescue Exception => e
-  exit(1)
+# Ruby version checks. Right now just for 1.8
+if RUBY_VERSION.to_f == 1.8
+  raise "You're running Ruby version '#{RUBY_VERSION}'. "\
+        "Dosh requires Ruby 1.9.3 or above."
 end
+
+dir = File.dirname(File.expand_path(File.realdirpath(__FILE__)))
+require File.expand_path(File.join(dir, '..', 'lib', 'bin.rb'))

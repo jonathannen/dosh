@@ -1,0 +1,41 @@
+
+- VPC Build
+- NAT Build
+
+- Standard Build
+-- Ruby 2.0.0
+-- Build Essential
+-- htop, ntp, openssl
+
+- Canary, Static
+- Canary, Rack
+*- Canary, Sinatra
+
+- Install nginx
+- Install unicorn -x- do I need to, or can this be a production local gem?
+- Create the web repo
+- How to hook between repo and unicorn?
+- .cepa file?
+
+- Application Users
+-- webrepo
+-- Environment Variables
+
+
+- Git User
+
+- Blue/Green Load Balancers
+- Deploy Scripts
+- CEPA Gem as an Engine
+
+- Log Rotation
+
+- Work out what I'm going to do with STDOUT and STDERR messages
+- Define standard set of return codes and STDERR codes/messages
+
+How will deploy hooks work?
+.doshrc or application detection?
+
+dosh nginx start|stop|restart|tail
+
+unicorn needs start, stop, restart, force-reload, and status

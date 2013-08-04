@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
+# Copyright © 2013 Jon Williams. See LICENSE.txt for details.
+#
 # install_apt_source.rb <entry>
 
 puts("Entry must be supplied. Something like \"deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen\"") & exit(1) if ARGV.length == 0
