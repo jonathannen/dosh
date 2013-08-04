@@ -10,10 +10,7 @@ describe 'app/git' do
     before(:all) do
       # Create a repo to push from
       `mkdir app_git_src_repo && cd app_git_src_repo 
-       git init . 
-       git config user.email "cepa@example.org"
-       git confit user.name "Cepa Test"
-       git remote add origin ../app_git_tgt_repo`
+       git init . && git remote add origin ../app_git_tgt_repo`
        touch_and_commit_file('CANARY', 'app_git_src_repo')
     end
 
@@ -49,6 +46,8 @@ describe 'app/git' do
 
   def touch_and_commit_file(name, directory)
     v = "cd #{directory}
+         git config user.email \"cepa@example.org\"
+         git config user.name \"Cepa Test\"
          touch #{name}
          git add .
          git commit -am 'Touched #{name}'".lines.map(&:strip) * ' && '
